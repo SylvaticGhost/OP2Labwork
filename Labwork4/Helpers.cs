@@ -1,8 +1,6 @@
-using System.Numerics;
-
 namespace Labwork4;
 
-public class Helpers
+public static class Helpers
 {
     public static T[] GenerateArray<T>(int size) where T : struct, IComparable, IFormattable, IConvertible
     {
@@ -25,12 +23,11 @@ public class Helpers
             return array;
         }
 
-        else
-            throw new ArgumentException("Type not supported");
+        throw new ArgumentException("Type not supported");
     }
 
 
-    public static void PrintArray<T>(T[] array)
+    public static void PrintArray<T>(IEnumerable<T> array)
     {
         foreach (var item in array)
         {

@@ -1,6 +1,6 @@
 namespace Labwork4;
 
-public class Task2 //55
+public static class Task2 //55
 {
     public static void Main()
     {

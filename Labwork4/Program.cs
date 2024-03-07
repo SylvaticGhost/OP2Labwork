@@ -1,7 +1,7 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using Labwork4;
+﻿using Labwork4;
 
 Task1.Main();
+Console.WriteLine();
 Task2.Main();
+Console.WriteLine();
 Task3.Main();

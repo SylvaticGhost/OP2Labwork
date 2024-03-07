@@ -2,11 +2,11 @@ using static System.Double;
 
 namespace Labwork4;
 
-public class Task3 //64
+public static class Task3 //64
 {
     public static void Main()
     {
-        Console.WriteLine("Starting Task 1");
+        Console.WriteLine("Starting Task 3");
 
         List<int[]> testCases = [];
         
