@@ -44,10 +44,7 @@ public static class SortAlgorithms
 
     private static void ValidateArray(ref double[] array)
     {
-        foreach (double d in array)
-        {
-            if (double.IsNaN(d))
-                throw new ArgumentException("The array contains NaN, that can't be compared for sorting");
-        }
+        if (array.Any(double.IsNaN))
+            throw new ArgumentException("The array contains NaN, that can't be compared for sorting");
     }
 }
