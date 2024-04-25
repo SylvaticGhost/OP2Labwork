@@ -1,35 +1,40 @@
-using System.Text;
+﻿using System.Text;
 
 namespace LabWork8;
 
-public abstract class Gadget
+public abstract record Gadget
 {
-    public string Name { get; init; }
+    public Guid Id { get; }
+    public string Brand { get;  }
+    public string Model { get;  }
+    public decimal Price { get;  }
     
-    public (int, int) Dimensions { get; init; }
-    
-    public virtual int Cors { get; init; }
-    
-    public int RAM { get; init; }
-    
-    public int Storage { get; init; }
-    
-    public string OS { get; init; }
-    
-    
-    public override string ToString()
+    protected Gadget(string brand, string model, decimal price)
     {
-        StringBuilder stringBuilder = new();
+        if(string.IsNullOrWhiteSpace(brand))
+            throw new ArgumentException("Brand argument cannot be null or empty", nameof(brand));
         
-        stringBuilder.AppendLine($"Name: {Name}");
-        stringBuilder.AppendLine($"Dimensions: {Dimensions.Item1}x{Dimensions.Item2}");
-        stringBuilder.AppendLine($"Cors: {Cors}");
-        stringBuilder.AppendLine($"RAM: {RAM}");
-        stringBuilder.AppendLine($"Storage: {Storage}");
-        stringBuilder.AppendLine($"OS: {OS}");
-        
-        return stringBuilder.ToString();
-    }
-    
-}
+        if(string.IsNullOrWhiteSpace(model))
+            throw new ArgumentException("Model argument cannot be null or empty", nameof(model));
 
+        if (price <= 0)
+            throw new ArgumentException("Price argument must be greater than 0", nameof(price));
+        
+        Id = Guid.NewGuid();
+        Brand = brand;
+        Model = model;
+        Price = price;
+    }
+
+    public override string ToString() => $"Id: {Id}\n {GetInfoAboutGadget()}\n";
+    
+    public abstract string GetGadgetType();
+    
+    
+    public virtual string GetInfoAboutGadget() => 
+        $"Brand: {Brand}, Model: {Model}, Price: {Price}";
+
+    public abstract Gadget Rename(string newBrand, string newModel);
+    
+    public abstract Gadget GadgetChangePrice(decimal newPrice);
+}

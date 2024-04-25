@@ -1,95 +1,64 @@
-using System.Text;
+﻿using System.Text;
 
 namespace LabWork8;
 
-public class Tablet : Gadget , IPortable
+public record Tablet : Gadget, IPortableGadget
 {
-    public int Battery { get; init; }
-    public int Weight { get; init; }
-    public int FrontCameraPixels { get; init; }
+    public bool HasLTEModule { get; }
+    public int BatteryCapacityInMAh { get; }
+    public int RearCameraResolutionInMP { get; }
     
-    public bool HasSimCardSlot { get; init; }
-    
-    public bool HasFastCharge { get; init; }
-    
-    public Tablet ChangeOs(string os)
+    public Tablet(string brand, string model, decimal price, bool hasLteModule, int batteryCapacityInMAh, int rearCameraResolutionInMp) : base(brand, model, price)
     {
-        return new Tablet
-        {
-            Name = Name,
-            Dimensions = Dimensions,
-            Cors = Cors,
-            RAM = RAM,
-            Storage = Storage,
-            OS = os,
-            Battery = Battery,
-            Weight = Weight,
-            FrontCameraPixels = FrontCameraPixels
-        };
-    }
-    
-    public Tablet ChangeBattery(int battery)
-    {
-        return new Tablet
-        {
-            Name = Name,
-            Dimensions = Dimensions,
-            Cors = Cors,
-            RAM = RAM,
-            Storage = Storage,
-            OS = OS,
-            Battery = battery,
-            Weight = Weight,
-            FrontCameraPixels = FrontCameraPixels
-        };
-    }
-    
-    public Tablet AddOrRemoveSimCardSlot()
-    {
-        return new Tablet
-        {
-            Name = Name,
-            Dimensions = Dimensions,
-            Cors = Cors,
-            RAM = RAM,
-            Storage = Storage,
-            OS = OS,
-            Battery = Battery,
-            Weight = Weight,
-            FrontCameraPixels = FrontCameraPixels,
-            HasSimCardSlot = !HasSimCardSlot
-        };
+        HasLTEModule = hasLteModule;
+        
+        BatteryCapacityInMAh = batteryCapacityInMAh > 0? batteryCapacityInMAh 
+            : throw new ArgumentException("Battery capacity must be greater than 0", nameof(batteryCapacityInMAh));
+        
+        RearCameraResolutionInMP = rearCameraResolutionInMp > 0? rearCameraResolutionInMp 
+            : throw new ArgumentException("Rear camera resolution must be greater than 0", nameof(rearCameraResolutionInMp));
     }
 
+    public override string GetGadgetType() => "Tablet";
 
-    public override string ToString()
+    public override string GetInfoAboutGadget()
     {
-        StringBuilder stringBuilder = new();
-        
-        stringBuilder.AppendLine(base.ToString());
-        stringBuilder.AppendLine($"Battery: {Battery}");
-        stringBuilder.AppendLine($"Weight: {Weight}");
-        stringBuilder.AppendLine($"Front Camera Pixels: {FrontCameraPixels}");
-        stringBuilder.AppendLine($"Has Sim Card Slot: {HasSimCardSlot}");
-        stringBuilder.AppendLine($"Has Fast Charge: {HasFastCharge}");
-        
-        return stringBuilder.ToString();
+        StringBuilder sb = new();
+        sb.AppendLine(base.GetInfoAboutGadget());
+        sb.AppendLine("Has LTE Module: " + HasLTEModule);
+        sb.AppendLine("Battery Capacity: " + BatteryCapacityInMAh + " mAh");
+        sb.AppendLine("Rear Camera Resolution: " + RearCameraResolutionInMP + " MP");
+        return sb.ToString();
     }
 
+    public override string ToString() =>$"Id: {Id}\n {GetInfoAboutGadget()}\n";
 
-    public override bool Equals(object? obj)
+    public override Tablet Rename(string newBrand, string newModel)
     {
-        if(typeof(object) != typeof(Tablet))
-        {
-            return false;
-        }
+        if(string.IsNullOrWhiteSpace(newBrand))
+            throw new ArgumentException("Brand argument cannot be null or empty", nameof(newBrand));
         
-        Tablet tablet = (obj as Tablet)!;
+        if(string.IsNullOrWhiteSpace(newModel))
+            throw new ArgumentException("Model argument cannot be null or empty", nameof(newModel));
         
-        int size1 = Dimensions.Item1 * Dimensions.Item2;
-        int size2 = tablet.Dimensions.Item1 * tablet.Dimensions.Item2;
+        return new Tablet(newBrand, newModel, Price, HasLTEModule, BatteryCapacityInMAh, RearCameraResolutionInMP);
+    }
+    
+    
+    public override Tablet GadgetChangePrice(decimal newPrice)
+    {
+        if (newPrice <= 0)
+            throw new ArgumentException("Price argument must be greater than 0", nameof(newPrice));
         
-        return size1 == size2 && Name == tablet.Name && Cors == tablet.Cors && RAM == tablet.RAM && Storage == tablet.Storage
-               && OS == tablet.OS && Battery == tablet.Battery && Weight == tablet.Weight && FrontCameraPixels == tablet.FrontCameraPixels && HasSimCardSlot == tablet.HasSimCardSlot && HasFastCharge == tablet.HasFastCharge;
+        return new Tablet(Brand, Model, newPrice, HasLTEModule, BatteryCapacityInMAh, RearCameraResolutionInMP);
+    }
+    
+    
+    public Tablet ChangeBatteryCapacity(int newBatteryCapacityInMAh)
+    {
+        if(newBatteryCapacityInMAh <= 0)
+            throw new ArgumentException("Battery capacity must be greater than 0", nameof(newBatteryCapacityInMAh));
+        
+        return new Tablet(Brand, Model, Price, HasLTEModule, newBatteryCapacityInMAh, RearCameraResolutionInMP);
     }
 }

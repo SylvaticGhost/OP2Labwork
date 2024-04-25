@@ -1,68 +1,63 @@
-using System.Text;
+﻿using System.Text;
 
 namespace LabWork8;
 
-public class PersonalComputer : Gadget, IComputer
+public record PersonalComputer : Gadget, IComputerGadget
 {
-    public int GPU { get; init; }
+    public bool HasVideoCard { get; }
     
+    public int DiskSlots { get; }
     
-
-    public PersonalComputer()
+    public PersonalComputer(string brand, string model, decimal price, bool hasVideoCard, int diskSlots) : base(brand, model, price)
     {
+        HasVideoCard = hasVideoCard;
+        DiskSlots = diskSlots > 0? diskSlots 
+            : throw new ArgumentException("Disk slots must be greater than 0", nameof(diskSlots));
+    }
+
+    public override string GetGadgetType() => "Personal Computer";
+
+    public override string GetInfoAboutGadget() =>
+        $"{base.GetInfoAboutGadget()}\nHas Video Card: {HasVideoCard}\nDisk Slots: {DiskSlots}";
+
+    public override string ToString() =>
+        $"{base.ToString()}\nHas Video Card: {HasVideoCard}\nDisk Slots: {DiskSlots}";
+    
+    
+    public PersonalComputer AddVideoCard()
+    {
+        if(HasVideoCard)
+            throw new InvalidOperationException("This computer already has a video card");
         
+        return new PersonalComputer(Brand, Model, Price, true, DiskSlots);
     }
-
-    public PersonalComputer AddDisk(int diskSpace)
+    
+    public PersonalComputer RemoveVideoCard()
     {
-        return new PersonalComputer()
-        {
-            Name = Name,
-            Dimensions = Dimensions,
-            Cors = Cors,
-            RAM = RAM,
-            Storage = Storage + diskSpace,
-            OS = OS,
-            GPU = GPU
-        };
-    }
-
-
-    public PersonalComputer ChangeOs(string os)
-    {
-        return new PersonalComputer
-        {
-            Name = Name,
-            Dimensions = Dimensions,
-            Cors = Cors,
-            RAM = RAM,
-            Storage = Storage,
-            OS = os,
-            GPU = GPU
-        };
+        if(!HasVideoCard)
+            throw new InvalidOperationException("This computer does not have a video card");
+        
+        return new PersonalComputer(Brand, Model, Price, false, DiskSlots);
     }
     
     
-    public override string ToString()
+    public override PersonalComputer Rename(string newBrand, string newModel)
     {
-        StringBuilder stringBuilder = new();
+        if(string.IsNullOrWhiteSpace(newBrand))
+            throw new ArgumentException("Brand argument cannot be null or empty", nameof(newBrand));
         
-        stringBuilder.AppendLine(base.ToString());
-        stringBuilder.AppendLine($"GPU: {GPU}");
+        if(string.IsNullOrWhiteSpace(newModel))
+            throw new ArgumentException("Model argument cannot be null or empty", nameof(newModel));
         
-        return stringBuilder.ToString();
+        return new PersonalComputer(newBrand, newModel, Price, HasVideoCard, DiskSlots);
     }
     
     
-    public override bool Equals(object? obj)
+    public override PersonalComputer GadgetChangePrice(decimal newPrice)
     {
-        if (obj == null || GetType() != obj.GetType())
-        {
-            return false;
-        }
-
-        PersonalComputer personalComputer = (PersonalComputer) obj;
+        if (newPrice <= 0)
+            throw new ArgumentException("Price argument must be greater than 0", nameof(newPrice));
         
-        return Name == personalComputer.Name && Dimensions == personalComputer.Dimensions && Cors == personalComputer.Cors && RAM == personalComputer.RAM && Storage == personalComputer.Storage && OS == personalComputer.OS && GPU == personalComputer.GPU;
+        return new PersonalComputer(Brand, Model, newPrice, HasVideoCard, DiskSlots);
     }
 }
